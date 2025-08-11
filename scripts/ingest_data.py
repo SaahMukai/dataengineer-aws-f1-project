@@ -1,22 +1,25 @@
-import boto3
 import os
+import pandas as pd
 
-# Nome do bucket de destino
-bucket_name = 'f1-projeto-raw'
+def transform(df):
+    df.drop_duplicates(inplace=True)
+    df.dropna(how="all", inplace=True)
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="ignore")
+    return df
 
-# Caminho local da pasta com os arquivos CSV
-local_folder = r'C:\Users\sabri\Desktop\dataengineer-aws-f1-project\data\raw'
+raw_folder = os.path.join("data", "raw")
+trusted_folder = os.path.join("data", "trusted")
+os.makedirs(trusted_folder, exist_ok=True)
 
-# Cria cliente do S3
-s3 = boto3.client('s3')
+for filename in os.listdir(raw_folder):
+    if filename.endswith(".csv"):
+        file_path = os.path.join(raw_folder, filename)
+        df = pd.read_csv(file_path)
+        df = transform(df)
+        trusted_path = os.path.join(trusted_folder, filename)
+        df.to_csv(trusted_path, index=False)
+        print(f"Arquivo processado e salvo em: {trusted_path}")
 
-for filename in os.listdir(local_folder):
-    if filename.endswith('.csv'):
-        file_path = os.path.join(local_folder, filename)
-        object_name = f'raw/{filename}'  # para manter a pasta raw no bucket
+print("Transformação concluída e arquivos salvos na pasta 'trusted'.")
 
-        try:
-            s3.upload_file(file_path, bucket_name, object_name)
-            print(f'✔️ Arquivo {filename} enviado para {bucket_name}/{object_name}')
-        except Exception as e:
-            print(f'❌ Erro ao enviar {filename}: {e}')
