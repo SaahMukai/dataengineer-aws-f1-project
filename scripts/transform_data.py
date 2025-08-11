@@ -33,4 +33,4 @@ for filename in os.listdir(raw_folder):
 
         print(f"Arquivo processado e salvo em: {trusted_path}")
 
-print("✅ Transformação concluída e arquivos salvos na pasta 'trusted'.")
+print("Transformação concluída e arquivos salvos na pasta 'trusted'.")
