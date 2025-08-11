@@ -1,23 +1,22 @@
 import boto3
 import os
 
-# Nome do bucket S3 trusted
-bucket_name = 'f1-projeto-trusted'
+BUCKET_NAME = "f1-data-engineer-project"
+TRUSTED_FOLDER = r'C:\Users\sabri\Desktop\dataengineer-aws-f1-project\data\trusted'
 
-# Pasta local com os arquivos tratados
-trusted_folder = r'C:\Users\sabri\Desktop\dataengineer-aws-f1-project\data\trusted'
+s3 = boto3.client("s3")
 
-# Cliente S3 boto3
-s3 = boto3.client('s3')
+def upload_trusted():
+    for filename in os.listdir(TRUSTED_FOLDER):
+        local_path = os.path.join(TRUSTED_FOLDER, filename)
+        if os.path.isfile(local_path):
+            new_filename = f"trusted_{filename}"
+            s3_path = f"trusted/{new_filename}"
+            s3.upload_file(local_path, BUCKET_NAME, s3_path)
+            print(f"{filename} enviado para s3://{BUCKET_NAME}/{s3_path}")
 
-# Loop pelos arquivos CSV na pasta trusted
-for filename in os.listdir(trusted_folder):
-    if filename.endswith('.csv'):
-        file_path = os.path.join(trusted_folder, filename)
-        s3_key = f'trusted/{filename}'  # Mantém o prefixo 'trusted/' no S3
+if __name__ == "__main__":
+    print("Iniciando upload da pasta TRUSTED...")
+    upload_trusted()
+    print("Upload TRUSTED concluído!")
 
-        try:
-            s3.upload_file(file_path, bucket_name, s3_key)
-            print(f'✔️ Arquivo {filename} enviado para s3://{bucket_name}/{s3_key}')
-        except Exception as e:
-            print(f'❌ Erro ao enviar {filename}: {e}')
