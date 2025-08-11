@@ -13,3 +13,6 @@ Neste projeto, assumo o papel de um analista de desempenho de uma equipe de F1. 
 - Preparar benchmarks e simulações para novos pilotos com base em históricos;
 
 - Implementar boas práticas de governança com o AWS DataZone, facilitando o consumo e a catalogação de dados para o time técnico.
+
+
+## os scripts estão disponíveis para automação via boto3, mas para simplificação deste projeto a carga inicial foi feita manualmente
